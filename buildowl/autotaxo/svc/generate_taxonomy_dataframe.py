@@ -82,16 +82,6 @@ class GenerateTaxonomyDataFrame(BaseObject):
 
         return master
 
-    def _extract_noun_phrases(self,
-                              doc: Doc) -> list:
-        observed = [nc.text for nc in extract.noun_chunks(
-            doc, drop_determiners=True)]
-
-        for item in observed:
-            print (item, " ---> ", self._decompose_term(item))
-
-        # print(observed)
-
     def _process(self,
                  input_text: str,
                  top_n) -> DataFrame:
@@ -100,12 +90,7 @@ class GenerateTaxonomyDataFrame(BaseObject):
             input_text,
             lang="en_core_web_sm")
 
-        print(type(doc))
-
         master = self._extract_keyterms(doc, top_n)
-
-        # self._extract_noun_phrases(doc)
-        # raise ValueError('stop here')
 
         df = pd.DataFrame(master)
         return df

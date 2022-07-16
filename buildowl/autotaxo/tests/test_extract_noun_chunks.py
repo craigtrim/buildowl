@@ -2,7 +2,7 @@ from pandas import DataFrame
 from tabulate import tabulate
 
 
-from buildowl.autotaxo.svc import ExtractTextacyNgrams
+from buildowl.autotaxo.svc import ExtractTextacyNounChunks
 
 
 def test_service():
@@ -14,13 +14,14 @@ def test_service():
         Historical network technologies include ARCNET, Token Ring, and AppleTalk.
     """
 
-    svc = ExtractTextacyNgrams()
+    svc = ExtractTextacyNounChunks()
     assert svc
 
     df = svc.process(
         input_text,
-        filter_stops=True,
-        term_frequency=1,
+        min_freq=True,
+        drop_determiners=True,
+        case_sensitive=False,
         as_dataframe=True)
 
     assert df is not None
@@ -34,12 +35,16 @@ def test_service():
     |    | Text                              |   Size |
     |----+-----------------------------------+--------|
     |  0 | local area network                |      3 |
-    |  1 | wide area network                 |      3 |
-    |  2 | larger geographic distance        |      3 |
-    |  3 | leased telecommunication circuits |      3 |
-    |  4 | local area networks               |      3 |
-    |  5 | historical network technologies   |      3 |
-    |  6 | technologies include arcnet       |      3 |
+    |  1 | computer network                  |      2 |
+    |  2 | limited area                      |      2 |
+    |  3 | university campus                 |      2 |
+    |  4 | office building                   |      2 |
+    |  5 | wide area network                 |      3 |
+    |  6 | larger geographic distance        |      3 |
+    |  7 | leased telecommunication circuits |      3 |
+    |  8 | local area networks               |      3 |
+    |  9 | historical network technologies   |      3 |
+    | 10 | token ring                        |      2 |
     +----+-----------------------------------+--------+
     """
 
