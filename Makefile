@@ -31,5 +31,5 @@ copy:
 
 all:
 	make build
-#	make copy
+	make copy
 	poetry run python -m pip install --upgrade pip
