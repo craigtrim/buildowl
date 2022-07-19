@@ -54,7 +54,7 @@ class TextacyNounChunkExtractor(BaseObject):
         results = list(noun_chunks(doc,
                                    min_freq=min_freq,
                                    drop_determiners=drop_determiners))
-        print(results)
+
         c = Counter()
         for result in results:
             c.update({result: 1})

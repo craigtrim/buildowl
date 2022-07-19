@@ -39,9 +39,16 @@ class AutoTaxoOrchestrator(BaseObject):
     def process(self,
                 input_text: str) -> list or None:
 
-        df_keyterms = ExtractKeyterms(self._model).process(input_text)
-        keyterms = FilterKeyterms().process(df_keyterms)
+        keyterms = self.keyterms(input_text)
         df_taxo = GenerateTaxonomyDataFrame().process(keyterms)
         ttl_results = GenerateTaxonomyTTL().process(df_taxo)
 
         return ttl_results
+
+    def keyterms(self,
+                input_text: str) -> list or None:
+
+        df_keyterms = ExtractKeyterms(self._model).process(input_text)
+        keyterms = FilterKeyterms().process(df_keyterms)
+        
+        return keyterms
