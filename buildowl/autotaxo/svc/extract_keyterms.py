@@ -6,15 +6,11 @@
 import pandas as pd
 from pandas import DataFrame
 
-from textacy import load_spacy_lang
-from textacy import make_spacy_doc
-from textacy.extract import keyterms as kt
+from spacy.lang.en import English
 
 from baseblock import Stopwatch
 from baseblock import BaseObject
 
-
-from buildowl.autotaxo.dto import load_model
 from buildowl.autotaxo.dmo import TextacyKeytermExtractor
 from buildowl.autotaxo.dmo import TextacyNgramExtractor
 from buildowl.autotaxo.dmo import TextacyNounChunkExtractor
@@ -24,7 +20,8 @@ from buildowl.autotaxo.dmo import TextacyTermExtractor
 class ExtractKeyterms(BaseObject):
     """ Aggregation Service for Extracting Keyterms """
 
-    def __init__(self):
+    def __init__(self,
+                 model: English):
         """
         Created:
             18-Jul-2022
@@ -32,8 +29,6 @@ class ExtractKeyterms(BaseObject):
             *   https://github.com/craigtrim/buildowl/issues/3
         """
         BaseObject.__init__(self, __name__)
-        model = load_model()
-
         self._extract_terms = TextacyTermExtractor(model).process
         self._extract_ngrams = TextacyNgramExtractor(model).process
         self._extract_keyterms = TextacyKeytermExtractor(model).process

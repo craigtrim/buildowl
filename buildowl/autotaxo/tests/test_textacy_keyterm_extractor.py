@@ -1,6 +1,7 @@
-from baseblock import Enforcer
-
 from buildowl.autotaxo.dmo import TextacyKeytermExtractor
+from buildowl.autotaxo.dto import load_model
+
+model = load_model()
 
 
 def test_component():
@@ -12,7 +13,7 @@ def test_component():
         Historical network technologies include ARCNET, Token Ring, and AppleTalk.
     """.strip()
 
-    dmo = TextacyKeytermExtractor()
+    dmo = TextacyKeytermExtractor(model)
     assert dmo
 
     results = dmo.process(top_n=15,

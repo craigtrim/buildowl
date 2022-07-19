@@ -1,6 +1,7 @@
-from baseblock import Enforcer
-
+from buildowl.autotaxo.dto import load_model
 from buildowl.autotaxo.dmo import TextacyNounChunkExtractor
+
+model = load_model()
 
 
 def test_component():
@@ -12,7 +13,7 @@ def test_component():
         Historical network technologies include ARCNET, Token Ring, and AppleTalk.
     """.strip()
 
-    dmo = TextacyNounChunkExtractor()
+    dmo = TextacyNounChunkExtractor(model)
     assert dmo
 
     results = dmo.process(input_text=input_text,

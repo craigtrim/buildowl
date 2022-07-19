@@ -11,8 +11,6 @@ from textacy.extract import keyterms as kt
 from baseblock import Stopwatch
 from baseblock import BaseObject
 
-from buildowl.autotaxo.dto import load_model
-
 
 class TextacyKeytermExtractor(BaseObject):
     """ Extract Keyterms from Input Text using Textacy 
@@ -22,7 +20,7 @@ class TextacyKeytermExtractor(BaseObject):
     """
 
     def __init__(self,
-                 model: English = None):
+                 model: English):
         """ Change Log
 
         Created:
@@ -38,9 +36,6 @@ class TextacyKeytermExtractor(BaseObject):
             model (English): spaCy model
         """
         BaseObject.__init__(self, __name__)
-        if model is None:
-            model = load_model()
-
         self._model = model
 
     def _process(self,

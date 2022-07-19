@@ -6,11 +6,14 @@ version = "0.1.0"
 
 [tool.poetry.dependencies]
 baseblock = "^0.1.2"
+fuzzywuzzy = "^0.18.0"
+nltk = "^3.7"
 pandas = "^1.4.0"
 python = "3.8.5"
 spacy = "3.3"
 tabulate = "0.8.10"
 textacy = "0.12.0"
+textblob = "^0.17.1"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "*"
@@ -18,9 +21,6 @@ pytest = "*"
 
 [tool.poetry.dependencies.en_core_web_sm]
 url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.3.0/en_core_web_sm-3.3.0.tar.gz"
-
-# [tool.poetry.dependencies.en_core_web_lg]
-# url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.3.0/en_core_web_lg-3.3.0.tar.gz"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

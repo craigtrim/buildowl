@@ -21,8 +21,12 @@ install:
 test:
 	poetry run pytest --disable-pytest-warnings
 
+nltk:
+	poetry run python -c "import nltk; nltk.download('omw-1.4')"
+
 build:
 	make install
+	make nltk
 	make test
 	poetry build
 

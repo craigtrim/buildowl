@@ -8,7 +8,7 @@ from pandas import DataFrame
 
 from textacy import load_spacy_lang
 from textacy import make_spacy_doc
-from textacy.extract import noun_chunks
+from textacy.extract.triples import subject_verb_object_triples
 
 from baseblock import Stopwatch
 from baseblock import BaseObject
@@ -16,8 +16,8 @@ from baseblock import BaseObject
 from buildowl.autotaxo.dmo import StopWordFilter
 
 
-class ExtractTextacyNounChunks(BaseObject):
-    """ Extract Ngrams from Input Text using Textacy """
+class TextacyTripleExtractor(BaseObject):
+    """ Extract Triples from Input Text using Textacy """
 
     def __init__(self):
         """
@@ -42,22 +42,21 @@ class ExtractTextacyNounChunks(BaseObject):
 
         doc = make_spacy_doc(input_text, lang=en)
 
-        results = list(noun_chunks(doc,
-                                   min_freq=min_freq,
-                                   drop_determiners=drop_determiners))
+        results = list(subject_verb_object_triples(doc))
+        print(results)
 
-        from collections import Counter
-        c = Counter()
-        for result in results:
-            c.update({result: 1})
+        # from collections import Counter
+        # c = Counter()
+        # for result in results:
+        #     c.update({result: 1})
 
-        s = set()
-        for term in c:
-            frequency = c[term]
-            if frequency >= min_freq:
-                s.add(term)
+        # s = set()
+        # for term in c:
+        #     frequency = c[term]
+        #     if frequency >= min_freq:
+        #         s.add(term)
 
-        return sorted(s)
+        # return sorted(s)
 
     def process(self,
                 input_text: str,
@@ -87,29 +86,31 @@ class ExtractTextacyNounChunks(BaseObject):
                                 case_sensitive=case_sensitive,
                                 min_freq=min_freq)
 
-        # the result-set is a list of spacy.tokens.span.Span elements
-        results = [x.text.strip() for x in results]
+        raise NotImplementedError('needs more work')
 
-        if filter_stops:
-            results = [x for x in results if not self._has_stopword(x)]
+        # # the result-set is a list of spacy.tokens.span.Span elements
+        # results = [x.text.strip() for x in results]
 
-        # I consider a 'noun chunk' to be 2..* nouns
-        results = [x for x in results if ' ' in x]
+        # if filter_stops:
+        #     results = [x for x in results if not self._has_stopword(x)]
 
-        if self.isEnabledForInfo:
-            self.logger.info('\n'.join([
-                "Noun Chunk Extraction Complete",
-                f"\tTotal Time: {str(sw)}",
-                f"\tTotal Size: {len(results)}"]))
+        # # I consider a 'noun chunk' to be 2..* nouns
+        # results = [x for x in results if ' ' in x]
 
-        if not as_dataframe:
-            return results
+        # if self.isEnabledForInfo:
+        #     self.logger.info('\n'.join([
+        #         "Noun Chunk Extraction Complete",
+        #         f"\tTotal Time: {str(sw)}",
+        #         f"\tTotal Size: {len(results)}"]))
 
-        master = []
+        # if not as_dataframe:
+        #     return results
 
-        for result in results:
-            master.append({
-                "Text": result,
-                "Size": len(result.split())})
+        # master = []
 
-        return pd.DataFrame(master)
+        # for result in results:
+        #     master.append({
+        #         "Text": result,
+        #         "Size": len(result.split())})
+
+        # return pd.DataFrame(master)

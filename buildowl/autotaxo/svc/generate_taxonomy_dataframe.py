@@ -45,19 +45,16 @@ class GenerateTaxonomyDataFrame(BaseObject):
 
         return taxonomy
 
-    def _extract_keyterms(self,
-                          doc: Doc,
-                          top_n: int) -> list:
-        results = extract.keyterms.textrank(
-            doc,
-            normalize="lemma",
-            topn=top_n)
-
+    def _process(self,
+                 results: list) -> list:
         master = []
 
         for result in results:
-            tokens = result[0].split()
+
+            tokens = result.split()
             tokens.reverse()
+
+            print (tokens)
 
             taxonomy = []
             for i in range(len(tokens)):
@@ -66,8 +63,8 @@ class GenerateTaxonomyDataFrame(BaseObject):
                     current.reverse()
                     taxonomy.append(' '.join(current))
 
-            if result[0] not in taxonomy:
-                taxonomy.append(result[0])
+            if result not in taxonomy:
+                taxonomy.append(result)
 
             if not len(taxonomy):
                 continue
@@ -82,28 +79,14 @@ class GenerateTaxonomyDataFrame(BaseObject):
 
         return master
 
-    def _process(self,
-                 input_text: str,
-                 top_n) -> DataFrame:
-
-        doc = make_spacy_doc(
-            input_text,
-            lang="en_core_web_sm")
-
-        master = self._extract_keyterms(doc, top_n)
-
-        df = pd.DataFrame(master)
-        return df
-
     def process(self,
-                input_text: str,
-                top_n: int) -> DataFrame:
+                results: list) -> DataFrame:
 
         sw = Stopwatch()
 
-        df = self._process(
-            input_text=input_text,
-            top_n=top_n)
+        master = self._process(results)
+
+        df = pd.DataFrame(master)
 
         if self.isEnabledForInfo:
             self.logger.info('\n'.join([

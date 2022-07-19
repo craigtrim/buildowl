@@ -5,8 +5,11 @@
 
 from baseblock import BaseObject
 
+from buildowl.autotaxo.svc import ExtractKeyterms
+from buildowl.autotaxo.svc import FilterKeyterms
 from buildowl.autotaxo.svc import GenerateTaxonomyDataFrame
 from buildowl.autotaxo.svc import GenerateTaxonomyTTL
+from buildowl.autotaxo.dto import load_model
 
 
 class AutoTaxoOrchestrator(BaseObject):
@@ -18,32 +21,27 @@ class AutoTaxoOrchestrator(BaseObject):
         Created:
             16-Apr-2022
             craigtrim@gmail.com
-            *   -   refactored out of jupyter notebook:
-                    GRAFFL-286 Textacy Textrank
-                    http://localhost:8888/notebooks/grafflbox/GRAFFL-286%20Textacy%20Textrank.ipynb
-                -   in pursuit of
-                    https://github.com/grafflr/graffl-core/issues/286
+            *   in pursuit of "Auto Taxonomy Building with Textacy Library #286"
         Updated:
             2-May-2022
             craigtrim@gmail.com
             *   renamed from 'generate-taxonomy'
+        Updated:
+            18-Jul-20922
+            craigtrim@gmail.com
+            *   overhaul end-to-end process
+                https://github.com/craigtrim/buildowl/issues/3
 
         """
         BaseObject.__init__(self, __name__)
+        self._model = load_model()
 
     def process(self,
-                input_text: str,
-                top_n: int = 500) -> list or None:
+                input_text: str) -> list or None:
 
-        df = GenerateTaxonomyDataFrame().process(
-            input_text=input_text,
-            top_n=top_n)
+        df_keyterms = ExtractKeyterms(self._model).process(input_text)
+        keyterms = FilterKeyterms().process(df_keyterms)
+        df_taxo = GenerateTaxonomyDataFrame().process(keyterms)
+        ttl_results = GenerateTaxonomyTTL().process(df_taxo)
 
-        if df is None:
-            return None
-
-        results = GenerateTaxonomyTTL().process(df)
-        if not results or not len(results):
-            return None
-
-        return results
+        return ttl_results

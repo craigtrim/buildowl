@@ -12,7 +12,6 @@ from baseblock import Stopwatch
 from baseblock import BaseObject
 
 from buildowl.autotaxo.dmo import StopWordFilter
-from buildowl.autotaxo.dto import load_model
 
 
 class TextacyNgramExtractor(BaseObject):
@@ -23,7 +22,7 @@ class TextacyNgramExtractor(BaseObject):
     """
 
     def __init__(self,
-                 model: English = None):
+                 model: English):
         """ Change Log
 
         Created:
@@ -40,9 +39,6 @@ class TextacyNgramExtractor(BaseObject):
             model (English): spaCy model
         """
         BaseObject.__init__(self, __name__)
-        if model is None:
-            model = load_model()
-
         self._model = model
         self._has_stopword = StopWordFilter().has_stopword
 
