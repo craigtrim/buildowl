@@ -22,7 +22,7 @@ def test_bp():
     bp = AutoTaxoOrchestrator()
     assert bp
 
-    results = bp.process(input_text)
+    results = bp.ttlresults(input_text)
     Enforcer.is_list_of_str(results)
 
 
@@ -40,6 +40,7 @@ def test_service():
     assert filter
 
     terms = filter(df)
+    print (terms)
 
     gendf = GenerateTaxonomyDataFrame().process
     assert gendf
