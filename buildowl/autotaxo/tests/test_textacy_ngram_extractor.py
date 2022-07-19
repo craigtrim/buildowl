@@ -1,10 +1,9 @@
-from pandas import DataFrame
-from tabulate import tabulate
+from baseblock import Enforcer
 
-from buildowl.autotaxo.svc import ExtractKeyterms
+from buildowl.autotaxo.dmo import TextacyNgramExtractor
 
 
-def test_service():
+def test_component():
 
     input_text = """
         A local area network (LAN) is a computer network that interconnects computers within a limited area such as a residence, school, laboratory, university campus or office building.
@@ -13,20 +12,17 @@ def test_service():
         Historical network technologies include ARCNET, Token Ring, and AppleTalk.
     """.strip()
 
-    svc = ExtractKeyterms()
-    assert svc
+    dmo = TextacyNgramExtractor()
+    assert dmo
 
-    df = svc.process(input_text)
-    print(tabulate(df, headers='keys', tablefmt='psql'))
+    results = dmo.process(ngram_level=2,
+                          input_text=input_text)
 
-    terms = [x.lower()
-             for x in list(df['Term'].unique()) if len(x.split()) > 1]
-    terms = sorted(set(terms), key=len, reverse=True)
-    [print(x) for x in terms]
+    print(results)
 
 
 def main():
-    test_service()
+    test_component()
 
 
 if __name__ == "__main__":

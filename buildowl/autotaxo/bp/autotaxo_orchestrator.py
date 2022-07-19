@@ -13,7 +13,7 @@ class AutoTaxoOrchestrator(BaseObject):
     """ Orchestrate Taxonomy Generation """
 
     def __init__(self):
-        """ Change History:
+        """ Change Log:
 
         Created:
             16-Apr-2022
