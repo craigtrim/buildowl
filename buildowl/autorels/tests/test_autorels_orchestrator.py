@@ -23,6 +23,11 @@ def test_orchestrator():
 
     print(tabulate(df_results, headers='keys', tablefmt='psql'))
 
+    ttl_results = bp.ttl(df_results)
+    Enforcer.is_list_of_str(ttl_results)
+
+    [print(x) for x in ttl_results]
+
 
 def main():
     test_orchestrator()

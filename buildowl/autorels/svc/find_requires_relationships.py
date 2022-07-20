@@ -16,7 +16,6 @@ class FindRequiresRelationships(BaseObject):
             20-Jul-20922
             craigtrim@gmail.com
             *   https://github.com/craigtrim/buildowl/issues/4
-
         """
         BaseObject.__init__(self, __name__)
 

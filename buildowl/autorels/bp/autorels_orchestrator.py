@@ -10,6 +10,7 @@ from baseblock import BaseObject
 
 from buildowl.autorels.svc import FindImpliesRelationships
 from buildowl.autorels.svc import FindRequiresRelationships
+from buildowl.autorels.svc import GenerateRelationshipsTTL
 
 
 class AutoRelsOrchestrator(BaseObject):
@@ -43,3 +44,7 @@ class AutoRelsOrchestrator(BaseObject):
             return None
 
         return pd.DataFrame(master)
+
+    def ttl(self,
+            df: DataFrame) -> list:
+        return GenerateRelationshipsTTL().process(df)
