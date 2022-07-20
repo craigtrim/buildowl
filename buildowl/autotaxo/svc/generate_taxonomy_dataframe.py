@@ -54,8 +54,6 @@ class GenerateTaxonomyDataFrame(BaseObject):
             tokens = result.split()
             tokens.reverse()
 
-            print (tokens)
-
             taxonomy = []
             for i in range(len(tokens)):
                 current = tokens[:i]

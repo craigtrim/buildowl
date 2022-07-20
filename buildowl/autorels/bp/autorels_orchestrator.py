@@ -3,7 +3,13 @@
 """ Orchestrate Taxonomy Generation """
 
 
+import pandas as pd
+from pandas import DataFrame
+
 from baseblock import BaseObject
+
+from buildowl.autorels.svc import FindImpliesRelationships
+from buildowl.autorels.svc import FindRequiresRelationships
 
 
 class AutoRelsOrchestrator(BaseObject):
@@ -20,8 +26,20 @@ class AutoRelsOrchestrator(BaseObject):
         """
         BaseObject.__init__(self, __name__)
 
-    def process(self,
-                terms: list) -> list or None:
+    def dataframe(self,
+                  terms: list) -> DataFrame or None:
 
-        return terms
-    
+        master = []
+
+        results = FindImpliesRelationships().process(terms)
+        if results:
+            [master.append(x) for x in results]
+
+        results = FindRequiresRelationships().process(terms)
+        if results:
+            [master.append(x) for x in results]
+
+        if not master:
+            return None
+
+        return pd.DataFrame(master)
