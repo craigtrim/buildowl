@@ -52,6 +52,7 @@ def test_service():
     assert ttlgen
 
     results = ttlgen(df)
+    print (">>>> ", results)
     [print(x) for x in results]
     Enforcer.is_list_of_str(results)
 

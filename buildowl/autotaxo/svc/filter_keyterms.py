@@ -28,9 +28,8 @@ class FilterKeyterms(BaseObject):
     def _process(self,
                  df: DataFrame) -> list:
 
-        # extract lower-cased bigrams-or-higher
-        terms = [x.lower() for x in list(df['Term'].unique())
-                 if len(x.split()) > 1]
+        terms = [x.lower() for x in list(df['Term'].unique())]
+        print(terms)
 
         # sort by length
         terms = sorted(set(terms), key=len, reverse=True)
@@ -61,6 +60,11 @@ class FilterKeyterms(BaseObject):
                         discards.add(t1)
                     else:
                         discards.add(t2)
+
+        # given a term like 'wi-fi' discard any 'wi' and 'fi' terms
+        for tokens in [x.split('-') for x in terms if '-' in x]:
+            print("CHECK TOKENS: ", tokens)
+            [discards.add(x) for x in tokens if x in terms]
 
         self.logger.debug('\n'.join([
             "Tokens Filtering Completed",

@@ -101,7 +101,7 @@ class TextacyNounChunkExtractor(BaseObject):
             results = [x for x in results if not self._has_stopword(x)]
 
         # I consider a 'noun chunk' to be 2..* nouns
-        results = [x for x in results if ' ' in x]
+        # results = [x for x in results if ' ' in x]
 
         if self.isEnabledForInfo:
             self.logger.info('\n'.join([

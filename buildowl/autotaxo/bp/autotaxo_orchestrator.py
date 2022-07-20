@@ -39,11 +39,19 @@ class AutoTaxoOrchestrator(BaseObject):
         self._model = load_model()
 
     def keyterms(self,
-                 input_text: str) -> list or None:
+                 input_text: str,
+                 use_terms: bool = True,
+                 use_keyterms: bool = True,
+                 use_ngrams: bool = False,
+                 use_nounchunks: bool = False) -> list or None:
         """ Generate KeyTerms as a simple list
 
         Args:
             input_text (str): input text of any length or description
+            use_terms (bool, optional). Use Simple Term extraction algorithms. Default is True.
+            use_keyterms (bool, optional). Use KeyTerm extraction algorithms. Default is True.
+            use_ngrams (bool, optional). Use n-Gram extraction algorithms. Default is False.
+            use_nounchunks (bool, optional). Use Noun Chunk extraction algorithms. Default is False.
 
         Sample Input:
             A local area network (LAN) is a computer network that interconnects computers within a limited area such as a residence, school, laboratory, university campus or office building.
@@ -70,8 +78,14 @@ class AutoTaxoOrchestrator(BaseObject):
         Returns:
             list or None: list of keyterms
         """
+        svc = ExtractKeyterms(self._model)
 
-        df_keyterms = ExtractKeyterms(self._model).process(input_text)
+        df_keyterms = svc.process(input_text,
+                                  use_terms=use_terms,
+                                  use_keyterms=use_keyterms,
+                                  use_ngrams=use_ngrams,
+                                  use_nounchunks=use_nounchunks)
+
         keyterms = FilterKeyterms().process(df_keyterms)
 
         return keyterms
