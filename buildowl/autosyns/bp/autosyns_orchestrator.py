@@ -27,8 +27,11 @@ class AutoSynsOrchestrator(BaseObject):
         BaseObject.__init__(self, __name__)
         self._find_inflections = GenerateInflectionCall().process
 
-    def process(self,
-                input_text: str) -> list:
+    def _keyterms(self,
+                  input_text: str) -> list:
+        if ' ' not in input_text:
+            return [input_text]
+
         svc = AutoTaxoOrchestrator()
         keyterms = svc.keyterms(input_text,
                                 use_keyterms=True,
@@ -40,10 +43,16 @@ class AutoSynsOrchestrator(BaseObject):
         for keyterm in keyterms:
             [unigrams.add(x) for x in keyterm.split()]
 
+        return sorted(unigrams)
+
+    def process(self,
+                input_text: str) -> list:
         master = []
-        for unigram in unigrams:
-            d_result = self._find_inflections(unigram)
-            csv = ','.join(d_result['inflections'])
-            master.append(f"{unigram}~{csv}")
+
+        for keyterm in self._keyterms(input_text):
+            d_result = self._find_inflections(keyterm)
+            if d_result:
+                csv = ','.join(d_result['inflections'])
+                master.append(f"{keyterm}~{csv}")
 
         return master

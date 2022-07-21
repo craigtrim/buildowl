@@ -19,7 +19,52 @@ class OpenAIOutputExtractor(BaseObject):
         """
         BaseObject.__init__(self, __name__)
 
+    def _remove_conflicts(self,
+                          search_term: list,
+                          inflections: set) -> list:
+        """ The openAI output will occasionally return the examples used in the prompt
+            as part of the answer
+
+        Args:
+            search_term (str): the term that was searched on
+            inflections (set): the inflections extracted from the search result
+
+        Returns:
+            set: the potentially modified set of inflections
+        """
+        if not search_term.lower().startswith('troubleshoot'):
+            prompt_terms = [
+                'troubleshoots',
+                'troubleshooting',
+                'troubleshooted',
+                'troubleshooter',
+                'troubleshooters'
+            ]
+
+            inflections = [x for x in inflections if x not in prompt_terms]
+
+        return inflections
+
+    def _handle_inner_line_breaks(self,
+                                  inflections: list) -> list:
+        """ Handle Line Breaks embedded within the output list
+
+        Args:
+            inflections (list): the incoming inflections
+            the incoming list can sometimes look like this:
+                "text": " wider, widest\n         widens, widened, widening\n         widely",
+
+        Returns:
+            list: the corrected list
+        """
+        normalized = []
+        for inflection in inflections:
+            [normalized.append(x.strip()) for x in inflection.split('\n')]
+
+        return normalized
+
     def process(self,
+                search_term: str,
                 d_event: dict) -> dict:
         """ Like all OpenAI events there are multiple possible format outcomes
 
@@ -36,10 +81,11 @@ class OpenAIOutputExtractor(BaseObject):
             }
 
         Args:
-            d_event (dict): _description_
+            search_term (str): the term that was searched on
+            d_event (dict): the raw result from openAI
 
         Returns:
-            dict: _description_
+            dict: a normalized result
         """
 
         def has_expected_format() -> bool:
@@ -62,6 +108,12 @@ class OpenAIOutputExtractor(BaseObject):
         inflections = [x.strip().lower()
                        for x in output_text.split(',')]
 
-        inflections = sorted(set(inflections), key=len, reverse=True)   
+        inflections = self._handle_inner_line_breaks(inflections)
+
+        inflections = self._remove_conflicts(search_term=search_term,
+                                             inflections=inflections)
+
+        inflections = [x.strip() for x in inflections]
+        inflections = sorted(set(inflections), key=len, reverse=True)
 
         return inflections

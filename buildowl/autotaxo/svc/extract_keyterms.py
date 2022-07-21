@@ -43,6 +43,8 @@ class ExtractKeyterms(BaseObject):
 
         master = []
 
+        input_text = input_text.replace('-', '')  # hyphens are problematic ...
+
         if use_keyterms:
             [master.append(x) for x in self._extract_keyterms(input_text)]
 

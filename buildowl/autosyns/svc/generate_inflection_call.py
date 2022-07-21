@@ -115,7 +115,8 @@ Inflections:
         }
 
         d_openai_output = self._execute_event()(d_openai_input)
-        inflections = self._extract_output()(d_openai_output)
+        inflections = self._extract_output()(search_term=input_text,
+                                             d_event=d_openai_output)
 
         # GRAFFL-278; Generate an Event Record
         d_event = self._generate_event()(

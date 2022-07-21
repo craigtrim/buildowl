@@ -73,13 +73,23 @@ class FilterKeyterms(BaseObject):
 
         terms = [x.strip() for x in terms if x not in discards]
 
+        def has_bad_char(a_term: str) -> str:
+            if '(' in a_term:
+                return True
+            if ')' in a_term:
+                return True
+            return False
+
+        terms = [x for x in terms if not has_bad_char(x)]
+
         # lemmatize individual tokens in each term
         lemmatized_terms = set()
         for term in terms:
             tokens = term.split()
             term = ' '.join([Word(x).lemmatize() for x in tokens]).strip()
-            lemmatized_terms.add(term)
+            lemmatized_terms.add(term.strip())
 
+        lemmatized_terms = [x.strip() for x in lemmatized_terms]
         return sorted(lemmatized_terms, key=len, reverse=True)
 
     def process(self,

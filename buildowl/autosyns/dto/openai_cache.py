@@ -34,7 +34,16 @@ class OpenAICache(BaseObject):
                                     file_name[0],
                                     file_name[1],
                                     file_name[2])
+            if len(file_name) >= 2:
+                return os.path.join(self._cache_path,
+                                    file_name[0],
+                                    file_name[1])
+            if len(file_name) >= 1:
+                return os.path.join(self._cache_path,
+                                    file_name[0])
+
         base_dir = base()
+
         FileIO.exists_or_create(base_dir)
         return os.path.join(base_dir, f"{file_name}.json")
 
@@ -48,7 +57,15 @@ class OpenAICache(BaseObject):
         Returns:
             bool: True if the file exists (this does not indicate if the file has content; only if the file exists)
         """
-        return FileIO.exists(self._file_path(file_name))
+        try:
+            file_path = self._file_path(file_name)
+            return FileIO.exists(file_path)
+        except TypeError as e:
+            self.logger.error('\n'.join([
+                "File Path Error",
+                f"\tFile Name: {file_name}",
+                f"\tError: {e}"]))
+            return False
 
     def read(self,
              file_name: str) -> dict or list or None:
