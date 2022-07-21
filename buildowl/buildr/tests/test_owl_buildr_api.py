@@ -4,6 +4,7 @@
 
 
 import os
+from rdflib import Graph
 
 from buildowl.buildr.bp import OwlBuilderAPI
 
@@ -15,8 +16,8 @@ def test_owl_buildr_api():
         model_name="mytest001",
         model_path=os.getcwd(),
         model_author="ctrim")
-    
-    print (f"Generated Test Model: {model_file_name}")
+
+    print(f"Generated Test Model: {model_file_name}")
     assert os.path.exists(model_file_name)
 
     version = api.add_entities(
@@ -46,6 +47,10 @@ def test_owl_buildr_api():
 
     assert version == "0.1.4"
     assert os.path.exists(model_file_name)
+
+    g = api.to_graph(model_file_name)
+    assert g
+    assert type(g) == Graph
 
     os.remove(model_file_name)
     assert not os.path.exists(model_file_name)

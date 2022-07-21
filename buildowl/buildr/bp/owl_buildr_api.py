@@ -3,10 +3,13 @@
 """ Orchestrate Taxonomy Generation """
 
 
+from rdflib import Graph
+
 from baseblock import BaseObject
 
 from buildowl.buildr.svc import AddGraphNodes
 from buildowl.buildr.svc import GenerateOwlModel
+from buildowl.buildr.dmo import OwlGraphConnector
 
 
 class OwlBuilderAPI(BaseObject):
@@ -58,34 +61,18 @@ class OwlBuilderAPI(BaseObject):
             ttl_entities=ttl_entities,
             model_file_name=model_file_name)
 
+    def to_graph(self,
+                 model_file_name: str) -> Graph:
+        from baseblock import FileIO
+        lines = FileIO.read_lines(model_file_name)
 
-def main():
+        def get_prefix() -> str:
+            for line in lines:
+                if line.startswith('@prefix'):
+                    line = line.split(': <')[-1].split('#')[0]
+                    # line = line.replace('<', '').strip()
+                    return line
 
-    api = OwlBuilderAPI()
-
-    model_file_name = api.generate(
-        model_name="mytest001",
-        model_path="c:/Users/Craig/Desktop",
-        model_author="ctrim")
-
-    version = api.add_entities(
-        ttl_entities=[],
-        model_file_name=model_file_name)
-
-    version = api.add_entities(
-        ttl_entities=[],
-        model_file_name=model_file_name)
-
-    version = api.add_entities(
-        ttl_entities=[],
-        model_file_name=model_file_name)
-
-    version = api.add_entities(
-        ttl_entities=[],
-        model_file_name=model_file_name)
-
-    print(version)
-
-
-if __name__ == "__main__":
-    main()
+        prefix = get_prefix()
+        print (prefix)
+        # OwlGraphConnector()
