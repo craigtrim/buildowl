@@ -1,9 +1,11 @@
-from pandas import DataFrame
-from tabulate import tabulate
-
 from baseblock import Enforcer
 
 from buildowl.autosyns.bp import AutoSynsOrchestrator
+
+
+import os
+os.environ['USE_OPENAI'] = str(False)
+
 
 input_text = """
     A local area network (LAN) is a computer network that interconnects computers within a limited area such as a residence, school, laboratory, university campus or office building.
@@ -17,10 +19,15 @@ def test_orchestrator():
     bp = AutoSynsOrchestrator()
     assert bp
 
-    bp.process(input_text)
+    result = bp.process(input_text)
+
+    if result:
+        [print(x) for x in result]
+        Enforcer.is_list_of_str(result)
 
 
 def main():
+    os.environ['USE_OPENAI'] = str(True)
     test_orchestrator()
 
 

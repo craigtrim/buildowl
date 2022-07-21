@@ -9,6 +9,7 @@ from pandas import DataFrame
 from baseblock import BaseObject
 
 from buildowl.autotaxo.bp import AutoTaxoOrchestrator
+from buildowl.autosyns.svc import GenerateInflectionCall
 
 
 class AutoSynsOrchestrator(BaseObject):
@@ -24,6 +25,7 @@ class AutoSynsOrchestrator(BaseObject):
 
         """
         BaseObject.__init__(self, __name__)
+        self._find_inflections = GenerateInflectionCall().process
 
     def process(self,
                 input_text: str) -> list:
@@ -33,4 +35,15 @@ class AutoSynsOrchestrator(BaseObject):
                                 use_ngrams=True,
                                 use_nounchunks=True,
                                 use_terms=True)
-        print (keyterms)
+
+        unigrams = set()
+        for keyterm in keyterms:
+            [unigrams.add(x) for x in keyterm.split()]
+
+        master = []
+        for unigram in unigrams:
+            d_result = self._find_inflections(unigram)
+            csv = ','.join(d_result['inflections'])
+            master.append(f"{unigram}~{csv}")
+
+        return master
