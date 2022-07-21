@@ -9,6 +9,7 @@ from baseblock import BaseObject
 
 from buildowl.buildr.svc import AddGraphNodes
 from buildowl.buildr.svc import GenerateOwlModel
+from buildowl.buildr.svc import OpenAsGraph
 from buildowl.buildr.dmo import OwlGraphConnector
 
 
@@ -63,16 +64,12 @@ class OwlBuilderAPI(BaseObject):
 
     def to_graph(self,
                  model_file_name: str) -> Graph:
-        from baseblock import FileIO
-        lines = FileIO.read_lines(model_file_name)
+        """ Open a file-based model as an rdflib Graph
 
-        def get_prefix() -> str:
-            for line in lines:
-                if line.startswith('@prefix'):
-                    line = line.split(': <')[-1].split('#')[0]
-                    # line = line.replace('<', '').strip()
-                    return line
+        Args:
+            model_file_name (str): the path to the existing model
 
-        prefix = get_prefix()
-        print (prefix)
-        # OwlGraphConnector()
+        Returns:
+            Graph: an instantiation of an rdflib Graph object
+        """
+        return OpenAsGraph().process(model_file_name)

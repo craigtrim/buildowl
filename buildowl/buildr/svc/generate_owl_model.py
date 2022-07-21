@@ -39,6 +39,17 @@ class GenerateOwlModel(BaseObject):
                 model_name: str,
                 model_path: str,
                 model_author: str = None) -> str:
+        """ Generate an OWL model
+
+        Args:
+            model_name (str): the name of the model
+                this will form part of the namespace URI
+            model_path (str): the directory the model will be persisted to
+            model_author (str, optional): the model author. Defaults to None.
+
+        Returns:
+            str: the absolute path to the OWL model
+        """
 
         template_path = os.path.normpath(os.path.join(EnvIO.str_or_exception(
             'BUILDOWL_HOME'), 'resources/models/templates/template.owl'))
