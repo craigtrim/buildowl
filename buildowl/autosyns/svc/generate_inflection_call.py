@@ -4,7 +4,7 @@
 
 
 from pprint import pprint
-from functools import lru_cache
+from typing import Callable
 
 from baseblock import EnvIO
 from baseblock import Stopwatch
@@ -15,10 +15,15 @@ from baseblock import ServiceEventGenerator
 
 from buildowl.autosyns.dmo import OpenAIEventExecutor
 from buildowl.autosyns.dmo import OpenAIOutputExtractor
+from buildowl.autosyns.dto import OpenAICache
 
 
 class GenerateInflectionCall(BaseObject):
     """ OpenAI: Generate Inflection Prompts """
+
+    __generate_event = None
+    __execute_event = None
+    __extract_output = None
 
     def __init__(self):
         """
@@ -28,11 +33,26 @@ class GenerateInflectionCall(BaseObject):
             *   https://github.com/craigtrim/buildowl/issues/5
         """
         BaseObject.__init__(self, __name__)
-        self._generate_event = ServiceEventGenerator().process
-        self._execute_event = OpenAIEventExecutor().process
-        self._extract_output = OpenAIOutputExtractor().process
+        cache = OpenAICache()
+        self._exists_in_cache = cache.exists
+        self._write_to_cache = cache.write
+        self._read_from_cache = cache.read
 
-    @lru_cache
+    def _generate_event(self) -> Callable:
+        if not self.__generate_event:
+            self.__generate_event = ServiceEventGenerator().process
+        return self.__generate_event
+
+    def _execute_event(self) -> Callable:
+        if not self.__execute_event:
+            self.__execute_event = OpenAIEventExecutor().process
+        return self.__execute_event
+
+    def _extract_output(self) -> Callable:
+        if not self.__extract_output:
+            self.__extract_output = OpenAIOutputExtractor().process
+        return self.__extract_output
+
     def process(self,
                 input_text: str,
                 temperature: float = 0.7,
@@ -40,7 +60,7 @@ class GenerateInflectionCall(BaseObject):
                 top_p: float = 1.0,
                 best_of: int = 1,
                 frequency_penalty: float = 0.0,
-                presence_penalty: float = 0.0) -> dict:
+                presence_penalty: float = 0.0) -> dict or None:
         """ Call the OpenAI Text Summarizer
 
         Args:
@@ -59,8 +79,11 @@ class GenerateInflectionCall(BaseObject):
             dict: the complete openAI event
         """
 
+        if self._exists_in_cache(input_text):
+            return self._read_from_cache(input_text)
+
         if not EnvIO.is_true("USE_OPENAI"):
-            return "*** OPENAI DISABLED ***", []
+            return None
 
         sw = Stopwatch()
         if self.isEnabledForDebug:
@@ -79,8 +102,6 @@ Inflections:
 
         """
 
-        print(prompt_input)
-
         d_openai_input = {
             'input_text': input_text,
             'prompt_input': prompt_input,
@@ -93,13 +114,11 @@ Inflections:
             'presence_penalty': presence_penalty,
         }
 
-        d_openai_output = self._execute_event(d_openai_input)
-        pprint(d_openai_output)
-
-        inflections = self._extract_output(d_openai_output)
+        d_openai_output = self._execute_event()(d_openai_input)
+        inflections = self._extract_output()(d_openai_output)
 
         # GRAFFL-278; Generate an Event Record
-        d_event = self._generate_event(
+        d_event = self._generate_event()(
             service_name=self.component_name(),
             event_name='generate-inflection-call',
             stopwatch=sw,
@@ -117,4 +136,11 @@ Inflections:
                 f"\tInput Text: {input_text.strip()}",
                 f"\tOutput Text: {inflections}"]))
 
-        return inflections, [d_event]
+        result = {
+            'inflections': inflections,
+            'events': [d_event]
+        }
+
+        self._write_to_cache(data=result,
+                             file_name=input_text)
+        return result
